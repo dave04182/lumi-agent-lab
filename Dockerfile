@@ -53,7 +53,7 @@ COPY data/ ./data/
 COPY pyproject.toml README.md ./
 
 # TODO 2: 보안 설정 - non-root 유저 생성 및 권한 설정
-RUN groupadd -r appuser && useradd -r -g appuser appuser \
+RUN groupadd -r appuser && useradd -r -m -g appuser appuser \
     && chown -R appuser:appuser /app
 
 # non-root 유저로 전환
@@ -66,10 +66,10 @@ ENV PYTHONUNBUFFERED=1 \
 
 # TODO 3: 헬스체크 설정
 HEALTHCHECK --interval=30s --timeout=5s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/health/ || exit 1
+    CMD curl -f http://localhost:8000/api/v1/health/ || exit 1
 
 # 포트 노출
 EXPOSE 8000
 
 # TODO 4: 서버 실행 명령어 작성(uv run)
-CMD ["uv", "run", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
